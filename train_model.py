@@ -151,20 +151,22 @@ def create_data_loaders(data, batch_size):
 # Mute everything after experimentation
 
 def model_fn(model_dir):
-    print("In model_fn. Model directory is -", model_dir)
-    device = "cpu"
-    model = net().to(device)
-#     model = Net()
     
-    with open(os.path.join(model_dir, "model.pth"), "rb") as f:
+    print("In model_fn. Model directory is -", model_dir)
+    device = torch.device("cuda") 
+    model = net() 
+    
+    with open(os.path.join(model_dir, "model.pth"), "rb") as f: 
         print("Loading the dog-classifier model")
-        print(f"Is f defined? type(f) = {type(f)}, f = {f}.")
-        checkpoint = torch.load(f , map_location =device)
-#         checkpoint = torch.load(f)
+        print(f"Is f defined? type(f) = {type(f)}, f = {f}.") 
+#         checkpoint = torch.load(f , map_location = device) 
+        checkpoint = torch.load(f)
         print("checkpoint defined.")
-        model.load_state_dict(checkpoint)
-        print('MODEL-LOADED')
+        model.load_state_dict(checkpoint) 
+        print('MODEL-LOADED') 
         logger.info('model loaded successfully')
+        
+    model.to(device)
     model.eval()
     return model
 
@@ -193,8 +195,8 @@ def input_fn(request_body, content_type=JPEG_CONTENT_TYPE):
 def predict_fn(input_object, model):
     logger.info('In predict fn')
     test_transform = transforms.Compose([
-    transforms.Resize((224, 224)),
-    transforms.ToTensor(),
+        transforms.Resize((224, 224)),
+        transforms.ToTensor(),
     ])
     logger.info("transforming input")
     input_object=test_transform(input_object)
